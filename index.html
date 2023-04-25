@@ -2,25 +2,21 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>solar system</title>
-        <link rel="stylesheet" href="style.css"/>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Drawing App</title>
+        <link rel="stylesheet" href="style.css" />
+        <script src="script.js" defer></script>
     </head>
     <body>
-	    <div id='colors'>
-	        <button id='black' onclick='changeColor("black")' ontouchstart='changeColor("black")'></button>
-		    <button id='red' onclick='changeColor("red")' ontouchstart='changeColor("red")'></button>
-		    <button id='green' onclick='changeColor("green")' ontouchstart='changeColor("green")'></button>
-		    <button id='blue' onclick='changeColor("blue")' ontouchstart='changeColor("blue")'></button>
-		    <button id='orange' onclick='changeColor("orange")' ontouchstart='changeColor("orange")'></button>
-		    <button id='pink' onclick='changeColor("pink")' ontouchstart='changeColor("pink")'></button>
-	    </div>
-	    <canvas id='canvas' width='300' height='200'></canvas>
-	    <div>
-	        <button onclick='clearCanvas()'>Clear</button>
-	    </div>
+        <canvas id="canvas" width="800" height="800"></canvas>
+        <div class="toolbox">
+            <button id="decrease">-</button>
+            <span id="size">30</span>
+            <button id="increase">+</button>
+            <input type="color" id="color" />
+            <button id="clear">💩</button>
+        </div>
     </body>
-    	<script src="script.js"></script>
 </html>
 <!-- created by 4mir z4r3i -->
