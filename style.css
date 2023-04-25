@@ -24,7 +24,7 @@ canvas {
     border: 1px solid rebeccapurple;
     display: flex;
     padding: 1rem;
-    width: 804px;
+    width: 604px;
 }
 
 .toolbox > * {
