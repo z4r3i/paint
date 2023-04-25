@@ -1,180 +1,89 @@
 // created by 4mir z4r3i
-var arr_touches = [];
-var canvas;
-var ctx;
-var down = false; //mouse is pressed
-var color = 'black'; //default drawing color
-var width = 5; // drawing width
+const canvas = document.getElementById("canvas");
+const increaseBtn = document.getElementById("increase");
+const decreaseBtn = document.getElementById("decrease");
+const sizeEl = document.getElementById("size");
+const colorEl = document.getElementById("color");
+const clearEl = document.getElementById("clear");
+const ctx = canvas.getContext("2d");
 
+let size = 30;
+let isPressed = false;
+let color = "black";
+let x = undefined;
+let y = undefined;
 
-//calling window.onload to make sure the HTML is loaded
-window.onload = function() {
-    canvas = document.getElementById('canvas');
-    ctx = canvas.getContext('2d'); 
-    ctx.lineWidth = width;
-    
-    //handling mouse click and move events
-    canvas.addEventListener('mousemove', handleMove); 
-    canvas.addEventListener('mousedown', handleDown);
-    canvas.addEventListener('mouseup', handleUp);
-    
-    //handling mobile touch events
-    canvas.addEventListener("touchstart", handleStart, false);
-    canvas.addEventListener("touchend", handleEnd, false);
-    canvas.addEventListener("touchcancel", handleCancel, false);
-    canvas.addEventListener("touchleave", handleEnd, false);
-    canvas.addEventListener("touchmove", handleTouchMove, false);
-};
-function handleMove(e)
-{
-	xPos = e.clientX-canvas.offsetLeft;
-	yPos = e.clientY-canvas.offsetTop;
-	if(down == true)
-	{
-		ctx.lineTo(xPos,yPos); //create a line from old point to new one
-		ctx.strokeStyle = color;
-		ctx.stroke();
-	}
-}
-function handleDown() 
-{
-    down = true;
+canvas.addEventListener("mousedown", (e) => {
+    isPressed = true;
+
+    x = e.offsetX;
+    y = e.offsetY;
+});
+
+canvas.addEventListener("mouseup", (e) => {
+    isPressed = false;
+
+    x = undefined;
+    y = undefined;
+});
+
+canvas.addEventListener("mousemove", (e) => {
+    if (isPressed) {
+        const x2 = e.offsetX;
+        const y2 = e.offsetY;
+
+        drawCircle(x2, y2);
+        drawLine(x, y, x2, y2);
+        x = x2;
+        y = y2;
+    }
+});
+
+function drawCircle(x, y) {
     ctx.beginPath();
-    ctx.moveTo(xPos, yPos);
+    ctx.arc(x, y, size, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
 }
-function handleUp() 
-{
-    down = false;
-}
-// created by 4mir z4r3i
-function handleStart(evt) 
-{
-    var touches = evt.changedTouches;
-    for(var i = 0; i < touches.length; i++) 
-    {
-	    if(isValidTouch(touches[i])) 
-	    {
-	        evt.preventDefault();
-	        arr_touches.push(copyTouch(touches[i]));
-	        ctx.beginPath();
-	        ctx.fillStyle = color;
-	        ctx.fill();
-        }
-    }
-}
-function handleTouchMove(evt) 
-{
-    var touches = evt.changedTouches;
-    var offset = findPos(canvas);
-    for (var i = 0; i < touches.length; i++) 
-    {
-		if(isValidTouch(touches[i])) 
-		{
-	        evt.preventDefault();
-	        var idx = ongoingTouchIndexById(touches[i].identifier);
-    	    if (idx >= 0) 
-    	    {
-    	        ctx.beginPath();
-    	        ctx.moveTo(arr_touches[idx].clientX-offset.x, arr_touches[idx].clientY-offset.y);
-    	        ctx.lineTo(touches[i].clientX-offset.x, touches[i].clientY-offset.y);
-    	        ctx.strokeStyle = color;
-    	        ctx.stroke();
-    	        
-    	        arr_touches.splice(idx, 1, copyTouch(touches[i]));
-    	    }   
-	    }
-    }
-}
-function handleEnd(evt) 
-{
-    var touches = evt.changedTouches;
-    var offset = findPos(canvas);
-    for (var i = 0; i < touches.length; i++) 
-    {
-		if(isValidTouch(touches[i])) 
-		{
-		    evt.preventDefault();
-	        var idx = ongoingTouchIndexById(touches[i].identifier);
-	        if (idx >= 0) 
-	        {
-	            ctx.lineWidth = 4;
-	            ctx.fillStyle = color;
-	            ctx.beginPath();
-	            ctx.moveTo(arr_touches[idx].clientX-offset.x, arr_touches[idx].clientY-offset.y);
-	            ctx.lineTo(touches[i].clientX-offset.x, touches[i].clientY-offset.y);
-	           arr_touches.splice(i, 1);
-	        } 
-        }
-	}
-}
-// created by 4mir z4r3i
-function handleCancel(evt) 
-{
-    evt.preventDefault();
-    var touches = evt.changedTouches;
-  
-    for (var i = 0; i < touches.length; i++) {
-	    arr_touches.splice(i, 1);
-    }
-}
-function copyTouch(touch) 
-{
-    return {identifier: touch.identifier,clientX: touch.clientX,clientY: touch.clientY};
-}
-function ongoingTouchIndexById(idToFind) 
-{
-    for (var i = 0; i < arr_touches.length; i++) {
-	    var id = arr_touches[i].identifier;
-	    if (id == idToFind) {
-	        return i;
-	    }
-    }
-    return -1;
-}
-function changeColor(new_color) 
-{
-    color = new_color;
-}
-function clearCanvas() 
-{
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-function isValidTouch(touch) 
-{
-    var curleft = 0, curtop = 0;
-    var offset = 0;
-    
-	if (canvas.offsetParent) {
-		do {
-			curleft += canvas.offsetLeft;
-			curtop += canvas.offsetTop;
-		} while (touch == canvas.offsetParent);
-	    
-	    offset = { x: curleft-document.body.scrollLeft, y: curtop-document.body.scrollTop };
-	}
-    
-    if(touch.clientX-offset.x > 0 &&
-	        touch.clientX-offset.x < parseFloat(canvas.width) &&
-	            touch.clientY-offset.y >0 &&
-	                touch.clientY-offset.y < parseFloat(canvas.height)) {
-        return true;
-    }
-	else 
-	{
-	    return false;
-	}
-}
-function findPos(obj) 
-{
-	var curleft = 0, curtop = 0;
-	if (obj.offsetParent) 
-	{
-		do {
-			curleft += obj.offsetLeft;
-			curtop += obj.offsetTop;
-		} while (obj == obj.offsetParent);
 
-		return { x: curleft-document.body.scrollLeft, y: curtop-document.body.scrollTop };
-	}
+function drawLine(x1, y1, x2, y2) {
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = size * 2;
+    ctx.stroke();
+}
+
+increaseBtn.addEventListener("click", () => {
+    size += 5;
+
+    if (size > 50) {
+        size = 50;
+    }
+
+    updateSizeOnScreen();
+});
+
+decreaseBtn.addEventListener("click", () => {
+    size -= 5;
+
+    if (size < 5) {
+        size = 5;
+    }
+
+    updateSizeOnScreen();
+});
+
+colorEl.addEventListener("change", (e) => {
+    color = e.target.value;
+});
+
+clearEl.addEventListener("click", () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+
+function updateSizeOnScreen() {
+    sizeEl.innerText = size;
 }
 // created by 4mir z4r3i
